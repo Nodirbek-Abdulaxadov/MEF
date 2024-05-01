@@ -1,3 +1,4 @@
+using GEH;
 using MongoDB.Querying;
 using WebApplication1.Data;
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +16,8 @@ builder.Services.AddDbContext<AppDbContext>(new DbContextOptions()
 });
 
 var app = builder.Build();
+
+app.UseMiddleware<GlobalErrorHandler>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

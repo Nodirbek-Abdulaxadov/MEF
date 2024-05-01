@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WebApplication1.Data;
 using WebApplication1.Data.Entites;
+using GEH.Exceptions;
 
 namespace WebApplication1.Controllers;
 
@@ -21,7 +22,7 @@ public class TestsController (AppDbContext dbContext)
     {
         var test = dbContext.Tests.FirstOrDefault(t => t.Id == id);
         if (test is null)
-            return NotFound();
+            throw new NotFoundException();
         return Ok(test);
     }
 
@@ -37,7 +38,7 @@ public class TestsController (AppDbContext dbContext)
     {
         var existingTest = dbContext.Tests.FirstOrDefault(t => t.Id == id);
         if (existingTest is null)
-            return NotFound();
+            throw new NotFoundException();
         test.Id = id;
         dbContext.Tests.Update(test);
         return Ok();
@@ -48,7 +49,7 @@ public class TestsController (AppDbContext dbContext)
     {
         var existingTest = dbContext.Tests.FirstOrDefault(t => t.Id == id);
         if (existingTest is null)
-            return NotFound();
+            throw new NotFoundException();
         dbContext.Tests.Delete(id);
         return Ok();
     }

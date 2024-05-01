@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\GEH\GEH.csproj" />
     <ProjectReference Include="..\MongoDB.Querying\MongoDB.Querying.csproj" />
   </ItemGroup>
 
