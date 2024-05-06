@@ -15,9 +15,13 @@ builder.Services.AddDbContext<AppDbContext>(new DbContextOptions()
     DatabaseName = builder.Configuration.GetConnectionString("MongoDBName")!
 });
 
+builder.Services.AddAlertaGram(builder.Configuration);
+
 var app = builder.Build();
 
-app.UseMiddleware<GlobalErrorHandler>();
+//app.UseMiddleware<GlobalErrorHandler>("Checkpoint");
+
+app.UseGlobalErrorHandler("Checkpoint");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
