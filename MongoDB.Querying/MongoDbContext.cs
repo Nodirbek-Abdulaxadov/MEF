@@ -1,14 +1,14 @@
-﻿namespace MongoDB.Querying;
+﻿namespace EntityFrameworkCore.MongoDb;
 
-public class DbContext
+public abstract class MongoDbContext
 {
-    private readonly DbContextOptions _options;
+    private readonly MongoDbContextOptions _options;
     private IMongoClient _client;
     private IMongoDatabase _database;
 
-    public DbContext() : this(new DbContextOptions()) { }
+    public MongoDbContext() : this(new MongoDbContextOptions()) { }
 
-    public DbContext(DbContextOptions options)
+    public MongoDbContext(MongoDbContextOptions options)
     {
         _options = options;
         _client = new MongoClient(_options.ConnectionString);

@@ -1,15 +1,16 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿namespace EntityFrameworkCore.MongoDb;
 
-namespace MongoDB.Querying;
-
-public class Collection<T> where T : BaseModel
+public class Collection<T> where T : BaseEntity
 {
     private readonly IMongoCollection<T>? _collection;
 
-    public Collection(DbContext dbContext)
+    public Collection(MongoDbContext dbContext)
     {
         _collection = dbContext.GetCollection<T>(typeof(T).Name);
     }
+
+    public IFindFluent<T, T> AsFindFluent()
+        => _collection.Find(_ => true);
 
     public List<T> ToList()
         => _collection.Find(FilterDefinition<T>.Empty).ToList();
@@ -29,8 +30,8 @@ public class Collection<T> where T : BaseModel
     public Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate)
         => _collection.Find(predicate).FirstOrDefaultAsync();
 
-    public List<T> Where(Expression<Func<T, bool>> predicate)
-        => _collection.Find(predicate).ToList();
+    public IFindFluent<T, T> Where(Expression<Func<T, bool>> predicate)
+        => _collection.Find(predicate);
 
     public bool Any()
         => _collection.Find(FilterDefinition<T>.Empty).Any();
@@ -68,7 +69,8 @@ public class Collection<T> where T : BaseModel
     public List<T> Include<TProperty>(Expression<Func<T, TProperty>> navigationPropertyPath)
     {
         var baseCollection = ToList();
-        var propertyCollection = baseCollection.Select(navigationPropertyPath.Compile()).ToList();
+        //Soon
+        /*var propertyCollection = baseCollection.Select(navigationPropertyPath.Compile()).ToList();
 
         foreach (var item in baseCollection)
         {
@@ -80,7 +82,7 @@ public class Collection<T> where T : BaseModel
                 var propertyItem = baseCollection.FirstOrDefault(x => x.Id == propertyValue!.ToString());
                 propertyType.GetProperty(typeof(T).Name)!.SetValue(property, propertyItem);
             }
-        }
+        }*/
         return baseCollection;
     }
 
@@ -97,5 +99,22 @@ public class Collection<T> where T : BaseModel
     public override string? ToString()
     {
         return base.ToString();
+    }
+}
+
+public static class CollectionExtensions
+{
+    public static IFindFluent<T, T> OrderBy<T>(this IFindFluent<T, T> findFluent, 
+                                             Expression<Func<T, object>> expression)
+        => findFluent.SortBy(expression);
+
+
+    public static IFindFluent<T, T> OrderByDescending<T>(this IFindFluent<T, T> findFluent,
+                                                       Expression<Func<T, object>> expression)
+        => findFluent.SortByDescending(expression);
+
+    public static List<T> Take<T>(this IFindFluent<T, T> findFluent, int count)
+    {
+        return findFluent.Limit(count).ToList();
     }
 }

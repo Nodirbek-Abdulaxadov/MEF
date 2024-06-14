@@ -1,10 +1,12 @@
-﻿namespace MongoDB.Querying;
+﻿namespace EntityFrameworkCore.MongoDb;
 
-public static class DbContextExtensions
+public static class MongoDbContextOptionsExtensions
 {
-    public static void AddDbContext<TDbContext>(this IServiceCollection services, DbContextOptions options)
-        where TDbContext : DbContext
+    public static void AddMongoDbContext<TDbContext>(this IServiceCollection services, MongoDbContextOptions options)
+        where TDbContext : MongoDbContext // Remove the nullable indicator (?) here
     {
+#pragma warning disable CS8634 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match 'class' constraint.
+#pragma warning disable CS8621 // Nullability of reference types in return type doesn't match the target delegate (possibly because of nullability attributes).
         services.AddSingleton(provider =>
         {
             var client = new MongoClient(options.ConnectionString);
@@ -33,6 +35,8 @@ public static class DbContextExtensions
 
             return dbContext;
         });
+#pragma warning restore CS8621 // Nullability of reference types in return type doesn't match the target delegate (possibly because of nullability attributes).
+#pragma warning restore CS8634 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match 'class' constraint.
 
     }
 }
